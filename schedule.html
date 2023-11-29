@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .class-info {
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .schedule {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Available Classes</h2>
+    <ul id="class-list">
+        <!-- Classes will be dynamically populated here -->
+    </ul>
+
+    <h2>Your Schedule</h2>
+    <ul id="schedule" class="schedule">
+        <!-- The schedule will be dynamically populated here -->
+    </ul>
+
+    <script>
+        // Fetch classes from the server
+        fetch('script.php')
+            .then(response => response.json())
+            .then(courses => {
+                // Populate the class list
+                var classList = document.getElementById('class-list');
+                courses.forEach(course => {
+                    var li = document.createElement('li');
+                    li.innerHTML = `<div class="class-info">${course.coursename} - ${course.coursetime} (${course.courseday})</div> <button onclick="addToSchedule('${course.courseid}', '${course.coursename}', '${course.coursetime}', '${course.courseday}')">Add</button>`;
+                    classList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error fetching classes:', error));
+
+        // Function to send a request to update studentschedule when a class is added or dropped
+        function updateStudentSchedule(action, courseId) {
+            fetch('update_schedule.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ action, courseId }),
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error updating student schedule:', error));
+        }
+    </script>
+
+    <script>
+        function addToSchedule(courseId, courseName, courseTime, courseDay) {
+            // Check if the class is already in the schedule
+            if (!isClassInSchedule(courseId)) {
+                // Add the class to the schedule
+                var scheduleList = document.getElementById('schedule');
+                var li = document.createElement('li');
+                li.innerHTML = `<div class="class-info">${courseId} - ${courseName} - ${courseTime} (${courseDay})</div> <button onclick="dropClass('${courseId}')">Drop</button>`;
+                scheduleList.appendChild(li);
+                 // Send a request to update studentschedule
+                 updateStudentSchedule('add', courseId);
+            } else {
+                alert('You have already added this class to your schedule.');
+            }
+        }
+
+        function dropClass(courseId) {
+            // Remove the class from the schedule
+            var scheduleList = document.getElementById('schedule');
+            var items = scheduleList.getElementsByTagName('li');
+            for (var i = 0; i < items.length; i++) {
+                var itemText = items[i].textContent || items[i].innerText;
+                if (itemText.includes(courseId)) {
+                    scheduleList.removeChild(items[i]);
+
+                    // Send a request to update studentschedule
+                    updateStudentSchedule('drop', courseId);
+
+                    break;
+                }
+            }
+        }
+
+        function isClassInSchedule(courseId) {
+            // Check if the class is already in the schedule
+            var scheduleList = document.getElementById('schedule');
+            var items = scheduleList.getElementsByTagName('li');
+            for (var i = 0; i < items.length; i++) {
+                var itemText = items[i].textContent || items[i].innerText;
+                if (itemText.includes(courseId)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    </script>
+
+</body>
+</html>

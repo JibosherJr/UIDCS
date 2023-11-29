@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .class-info {
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .schedule {
+            margin-top: 20px;
+        }
+
+        .class-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .class-info input {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Your Grading</h2>
+    <ul id="schedule" class="schedule">
+        <!-- The schedule will be dynamically populated here -->
+    </ul>
+
+    <script>
+        // Fetch classes from the server
+        fetch('facultyschedule.php')
+            .then(response => response.json())
+            .then(courses => {
+                // Populate the class list
+                var classList = document.getElementById('schedule');
+                courses.forEach(course => {
+                    var li = document.createElement('li');
+
+                    // Create a container for each class
+                    var classContainer = document.createElement('div');
+                    classContainer.classList.add('class-container');
+
+                    // Create text content for the class
+                    var classText = document.createTextNode(`${course.courseid}, ${course.coursename}, ${course.coursetime}, ${course.courseday}`);
+                    var classInfo = document.createElement('span');
+                    classInfo.classList.add('class-info');
+                    classInfo.appendChild(classText);
+
+                    // Create a textbox for each class
+                    var textBox = document.createElement('input');
+                    textBox.type = 'text';
+                    textBox.placeholder = 'Enter something...';
+
+                    // Create a submit button for each class
+                    var submitButton = document.createElement('button');
+                    submitButton.textContent = 'Submit';
+                    submitButton.addEventListener('click', function () {
+                        // Handle submission logic here
+                        var userInput = textBox.value;
+                        console.log(`Submitted: ${userInput}`);
+                    });
+
+                    // Append elements to the class container
+                    classContainer.appendChild(classInfo);
+                    classContainer.appendChild(textBox);
+                    classContainer.appendChild(submitButton);
+
+                    // Append the container to the list item
+                    li.appendChild(classContainer);
+
+                    // Append the list item to the schedule
+                    classList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error fetching classes:', error));
+    </script>
+
+</body>
+</html>

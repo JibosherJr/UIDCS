@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .class-info {
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .schedule {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Your Schedule</h2>
+    <ul id="schedule" class="schedule">
+        <!-- The schedule will be dynamically populated here -->
+    </ul>
+
+    <script>
+        // Fetch classes from the server
+        fetch('facultyschedule.php')
+            .then(response => response.json())
+            .then(courses => {
+                // Populate the class list
+                var classList = document.getElementById('schedule');
+                courses.forEach(course => {
+                    var li = document.createElement('li');
+                    li.textContent = `${course.courseid}, ${course.coursename}, ${course.coursetime}, ${course.courseday}`;
+                    classList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Error fetching classes:', error));
+
+        
+    </script>
+
+
+</body>
+</html>
