@@ -14,57 +14,63 @@
             color: #333;
         }
 
-        ul {
-            list-style-type: none;
-            padding: 0;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
 
-        .class-info {
-            margin-bottom: 10px;
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
         }
 
-        button {
-            padding: 5px 10px;
+        th {
             background-color: #4CAF50;
             color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .schedule {
-            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-    <h2>Your Schedule</h2>
-    <ul id="schedule" class="schedule">
-        <!-- The schedule will be dynamically populated here -->
-    </ul>
+    <h2>Your Schedule Professor Mahanti </h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Course ID</th>
+                <th>Course Name</th>
+                <th>Course Time</th>
+                <th>Course Day</th>
+            </tr>
+        </thead>
+        <tbody id="schedule">
+            <!-- The schedule will be dynamically populated here -->
+        </tbody>
+    </table>
 
     <script>
         // Fetch classes from the server
         fetch('facultyschedule.php')
             .then(response => response.json())
             .then(courses => {
-                // Populate the class list
-                var classList = document.getElementById('schedule');
+                // Populate the table
+                var tableBody = document.getElementById('schedule');
                 courses.forEach(course => {
-                    var li = document.createElement('li');
-                    li.textContent = `${course.courseid}, ${course.coursename}, ${course.coursetime}, ${course.courseday}`;
-                    classList.appendChild(li);
+                    var row = tableBody.insertRow();
+                    var cell1 = row.insertCell(0);
+                    var cell2 = row.insertCell(1);
+                    var cell3 = row.insertCell(2);
+                    var cell4 = row.insertCell(3);
+
+                    cell1.textContent = course.courseid;
+                    cell2.textContent = course.coursename;
+                    cell3.textContent = course.coursetime;
+                    cell4.textContent = course.courseday;
                 });
             })
             .catch(error => console.error('Error fetching classes:', error));
-
-        
     </script>
-
 
 </body>
 </html>
